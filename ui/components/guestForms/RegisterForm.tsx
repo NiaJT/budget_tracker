@@ -17,7 +17,7 @@ import {
   Mail,
   MapPin,
   Calendar,
-  UserCircle // Replaced VenusMars with UserCircle
+  UserCircle, // Replaced VenusMars with UserCircle
 } from "lucide-react";
 
 interface IRegisterForm {
@@ -50,21 +50,25 @@ const RegisterForm = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 p-4">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-green-600 to-teal-600 p-6 text-white">
+        <div className="bg-teal-600 p-6 text-white">
           <div className="flex items-center justify-center space-x-3">
             <div className="bg-white/20 p-2 rounded-full">
               <DollarSign className="h-6 w-6" />
             </div>
             <h1 className="text-2xl font-bold">BudgetEase</h1>
           </div>
-          <p className="text-center text-green-100 mt-2">Start your financial journey with us</p>
+          <p className="text-center text-green-100 mt-2">
+            Start your financial journey with us
+          </p>
         </div>
 
         {/* Form Section */}
         <div className="p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-800">Create Account</h2>
-            <p className="text-gray-500 mt-1">Join thousands managing their finances better</p>
+            <p className="text-gray-500 mt-1">
+              Join thousands managing their finances better
+            </p>
           </div>
 
           <Formik
@@ -182,8 +186,8 @@ const RegisterForm = () => {
                   type="submit"
                   disabled={isPending}
                   className={`w-full py-3 px-4 rounded-lg text-white font-medium ${
-                    isPending 
-                      ? "bg-green-400 cursor-not-allowed" 
+                    isPending
+                      ? "bg-green-400 cursor-not-allowed"
                       : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
                   } transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-md`}
                 >
@@ -201,9 +205,9 @@ const RegisterForm = () => {
           </Formik>
 
           <div className="mt-6 text-center text-sm text-gray-500">
-            Already have an account?{' '}
-            <Link 
-              href="/login" 
+            Already have an account?{" "}
+            <Link
+              href="/login"
               className="font-medium text-green-600 hover:text-green-700 inline-flex items-center transition-colors"
             >
               Sign In <ChevronRight className="h-4 w-4 ml-1" />
