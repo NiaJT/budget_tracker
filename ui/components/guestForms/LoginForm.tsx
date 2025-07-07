@@ -32,8 +32,9 @@ const LoginForm = () => {
       return await axiosInstance.post("/user/login", values);
     },
     onSuccess: (res) => {
+      console.log(res);
       const accessToken = res?.data?.accessToken;
-      const firstName = res?.data?.user?.firstName;
+      const firstName = res?.data?.details?.firstName;
       window.localStorage.setItem("accessToken", accessToken);
       window.localStorage.setItem("firstName", firstName);
       toast.success(`Welcome back, ${firstName}!`);
@@ -47,10 +48,12 @@ const LoginForm = () => {
   return (
     <div className="w-full lg:w-[700px] xl:w-[900px] h-[600px] flex rounded-xl">
       {/* Left Panel - Brand Showcase */}
-      <div className="hidden lg:flex flex-col justify-between w-1/2 bg-gradient-to-br from-green-600 to-teal-700 text-white p-8 rounded-l-xl">
+      <div className="hidden lg:flex flex-col justify-between w-1/2 bg-gradient-to-br from-teal-600 to-teal-700 text-white p-8 rounded-l-xl">
         <div className="mb-2">
           <h1 className="text-3xl font-bold">BudgetEase</h1>
-          <p className="text-teal-100 text-sm mt-1">Financial Freedom Starts Here</p>
+          <p className="text-teal-100 text-sm mt-1">
+            Financial Freedom Starts Here
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -88,7 +91,9 @@ const LoginForm = () => {
         <div className="mt-4">
           <div className="flex items-center mb-2">
             <div className="h-px bg-teal-400 flex-1"></div>
-            <div className="px-2 text-teal-200 text-xs">Trusted by thousands</div>
+            <div className="px-2 text-teal-200 text-xs">
+              Trusted by thousands
+            </div>
             <div className="h-px bg-teal-400 flex-1"></div>
           </div>
 
@@ -113,8 +118,8 @@ const LoginForm = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-white rounded-r-xl">
         <div className="w-full max-w-md">
           <div className="text-center mb-6">
-            <div className="mx-auto bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
+            <div className="mx-auto bg-teal-100 w-12 h-12 rounded-full flex items-center justify-center mb-2">
+              <DollarSign className="h-5 w-5 text-teal-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>
             <p className="text-gray-500 text-sm mt-1">Sign in to continue</p>
@@ -141,7 +146,10 @@ const LoginForm = () => {
             {({ handleSubmit, handleChange, values, errors, touched }) => (
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                  <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="email"
+                    className="block text-xs font-medium text-gray-700 mb-1"
+                  >
                     Email address
                   </label>
                   <input
@@ -152,9 +160,9 @@ const LoginForm = () => {
                     value={values.email}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 text-sm rounded-lg border ${
-                      errors.email && touched.email 
-                        ? "border-red-500 focus:ring-red-500" 
-                        : "border-gray-300 focus:ring-green-500"
+                      errors.email && touched.email
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-teal-500"
                     } focus:outline-none focus:ring-1 focus:border-transparent`}
                   />
                   {errors.email && touched.email && (
@@ -163,7 +171,10 @@ const LoginForm = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="password"
+                    className="block text-xs font-medium text-gray-700 mb-1"
+                  >
                     Password
                   </label>
                   <input
@@ -174,13 +185,15 @@ const LoginForm = () => {
                     value={values.password}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 text-sm rounded-lg border ${
-                      errors.password && touched.password 
-                        ? "border-red-500 focus:ring-red-500" 
-                        : "border-gray-300 focus:ring-green-500"
+                      errors.password && touched.password
+                        ? "border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-teal-500"
                     } focus:outline-none focus:ring-1 focus:border-transparent`}
                   />
                   {errors.password && touched.password && (
-                    <p className="mt-1 text-xs text-red-600">{errors.password}</p>
+                    <p className="mt-1 text-xs text-red-600">
+                      {errors.password}
+                    </p>
                   )}
                 </div>
 
@@ -190,14 +203,20 @@ const LoginForm = () => {
                       id="remember-me"
                       name="remember-me"
                       type="checkbox"
-                      className="h-3 w-3 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      className="h-3 w-3 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
                     />
-                    <label htmlFor="remember-me" className="ml-2 block text-gray-700">
+                    <label
+                      htmlFor="remember-me"
+                      className="ml-2 block text-gray-700"
+                    >
                       Remember me
                     </label>
                   </div>
 
-                  <Link href="/forgot-password" className="text-green-600 hover:text-green-500">
+                  <Link
+                    href="/forgot-password"
+                    className="text-teal-600 hover:text-teal-500"
+                  >
                     Forgot password?
                   </Link>
                 </div>
@@ -206,10 +225,10 @@ const LoginForm = () => {
                   type="submit"
                   disabled={isPending}
                   className={`w-full py-2 px-4 text-sm rounded-lg text-white font-medium ${
-                    isPending 
-                      ? "bg-green-400 cursor-not-allowed" 
-                      : "bg-green-600 hover:bg-green-700"
-                  } transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-green-500 focus:ring-offset-1`}
+                    isPending
+                      ? "bg-teal-400 cursor-not-allowed"
+                      : "bg-teal-600 hover:bg-teal-700"
+                  } transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:ring-offset-1`}
                 >
                   {isPending ? (
                     <span className="flex items-center justify-center">
@@ -230,7 +249,9 @@ const LoginForm = () => {
                 <div className="w-full border-t border-gray-200"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-2 bg-white text-xs text-gray-400">Or continue with</span>
+                <span className="px-2 bg-white text-xs text-gray-400">
+                  Or continue with
+                </span>
               </div>
             </div>
 
@@ -248,8 +269,11 @@ const LoginForm = () => {
           </div>
 
           <div className="mt-4 text-center text-xs text-gray-500">
-            Don't have an account?{" "}
-            <Link href="/register" className="font-medium text-green-600 hover:text-green-500 inline-flex items-center">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="font-medium text-teal-600 hover:text-teal-500 inline-flex items-center"
+            >
               Sign up <ChevronRight className="h-3 w-3 ml-0.5" />
             </Link>
           </div>

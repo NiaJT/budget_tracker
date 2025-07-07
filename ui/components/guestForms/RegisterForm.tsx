@@ -35,7 +35,7 @@ const RegisterForm = () => {
   const { isPending, mutate } = useMutation({
     mutationKey: ["budget-register"],
     mutationFn: async (values: IRegisterForm) => {
-      return await axiosInstance.post("/auth/register", values);
+      return await axiosInstance.post("/user/register", values);
     },
     onSuccess: () => {
       toast.success("Registration successful! Please login.");
@@ -188,7 +188,7 @@ const RegisterForm = () => {
                   className={`w-full py-3 px-4 rounded-lg text-white font-medium ${
                     isPending
                       ? "bg-green-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+                      : "bg-teal-600 hover:to-teal-700"
                   } transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-md`}
                 >
                   {isPending ? (
@@ -208,7 +208,7 @@ const RegisterForm = () => {
             Already have an account?{" "}
             <Link
               href="/login"
-              className="font-medium text-green-600 hover:text-green-700 inline-flex items-center transition-colors"
+              className="font-medium text-teal-600 hover:text-teal-700 inline-flex items-center transition-colors"
             >
               Sign In <ChevronRight className="h-4 w-4 ml-1" />
             </Link>
