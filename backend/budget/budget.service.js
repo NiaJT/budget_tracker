@@ -46,3 +46,45 @@ export const getBudgetPlan = async (req, res) => {
       .send({ message: "Loaded Budget Plan Successfully", budgetPlan });
   } catch (error) {}
 };
+export const budgetPlanUpdate = async (req, res) => {
+  try {
+    const updates = req.body;
+
+    // Attach userId from auth middleware
+    const userId = req.loggedInUser;
+
+    // Find the plan first
+    const plan = await BudgetTrackerTable.findOne({ userId });
+    if (!plan) {
+      return res.status(404).send({ message: "Budget Plan doesn't exist" });
+    }
+
+    // Update by plan._id
+    await BudgetTrackerTable.findByIdAndUpdate(plan._id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).send({ message: "Successfully updated budget plan" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+};
+export const removeBudgetPlan = async (req, res) => {
+  try {
+    const userId = req.loggedInUser;
+
+    const plan = await BudgetTrackerTable.findOne({ userId });
+    if (!plan) {
+      return res.status(404).send({ message: "Budget Plan doesn't exist" });
+    }
+
+    await BudgetTrackerTable.findByIdAndDelete(plan._id);
+
+    res.status(200).send({ message: "Successfully removed budget plan" });
+  } catch (error) {
+    console.error("Error removing budget plan:", error.message);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+};
