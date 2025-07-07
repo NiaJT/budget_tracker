@@ -49,11 +49,6 @@ const transactionSchema = new mongoose.Schema({
     ],
     required: true,
   },
-  categoryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
-    required: true,
-  },
 });
 
 const TransactionTable = mongoose.model("Transaction", transactionSchema);

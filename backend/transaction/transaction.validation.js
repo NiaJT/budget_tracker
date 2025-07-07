@@ -44,9 +44,4 @@ export const transactionValidationSchema = yup.object({
       "Invalid category"
     )
     .required("Category is required"),
-
-  categoryId: yup
-    .string()
-    .matches(/^[0-9a-fA-F]{24}$/, "Invalid category ID")
-    .required("Category ID is required"),
 });
