@@ -1,6 +1,7 @@
 import express from "express";
 import { CategoryTable } from "./category.schema.js";
 import { isUser } from "../middleware/authentication.middleware.js";
+import { validateReqbody } from "../middleware/validate.reqbody.js";
 const router = express.Router();
 router.get("/list", isUser, async (req, res) => {
   try {
