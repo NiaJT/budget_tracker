@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import { connectDB } from "./connectDB.js";
 import { UserController } from "./user/user.controller.js";
 import cors from "cors";
+import { CategoryTable } from "./category/category.schema.js";
+import { CategoryController } from "./category/category.controller.js";
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
@@ -13,6 +15,7 @@ app.use(
 );
 app.use(express.json());
 app.use("/user", UserController);
+app.use("/category", CategoryController);
 await connectDB();
 
 app.listen(PORT, () => {

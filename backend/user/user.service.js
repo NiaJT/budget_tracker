@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import UserTable from "./user.schema.js";
+import UserTable from "./user.model.js";
 import jwt from "jsonwebtoken";
 dotenv.config();
 export const registerController = async (req, res) => {
