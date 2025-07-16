@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   CreditCard,
   DollarSign,
@@ -15,12 +15,11 @@ import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios.instance";
 import toast from "react-hot-toast";
 
-const userInfo = {
-  name: "Niraj Thapa",
-  id: "9879 2832 4567 1234",
-  salary: "$5,250",
-  paypal: "$1,875",
-};
+interface IUser {
+  firstName: string;
+  lastName: string;
+  userId: string;
+}
 
 const recentTransactions = [
   {
@@ -58,15 +57,23 @@ const recentTransactions = [
 ];
 
 const HomePage = () => {
+  const [userInfo, setUserInfo] = useState<IUser>({
+    firstName: "Niraj",
+    lastName: "Thapa",
+    userId: "123444",
+  });
+
   const { isPending, data } = useQuery({
     queryKey: ["get-user-plan"],
     queryFn: async () => {
       const res = await axiosInstance.get("/budget/myplan");
       toast.success(res?.data?.message);
+      setUserInfo(res.data.budgetPlan[0].userInfo);
+
       return res;
     },
   });
-  console.log(data);
+
   return (
     <div className="flex flex-col md:flex-row w-full h-full gap-6 p-4">
       <div className="w-full md:w-[60%] bg-white p-6 rounded-3xl shadow-sm flex flex-col gap-6">
@@ -82,7 +89,7 @@ const HomePage = () => {
                     <CreditCard className="w-3 h-3" /> USER ID CARD
                   </div>
                   <div className="text-sm tracking-widest font-mono mt-2">
-                    {userInfo.id}
+                    {userInfo.userId}
                   </div>
                 </div>
                 <div className="bg-white/10 rounded-lg px-2 py-0.5 text-[10px] whitespace-nowrap">
@@ -90,10 +97,12 @@ const HomePage = () => {
                 </div>
               </div>
               <div className="mt-6">
-                <div className="text-sm font-semibold">{userInfo.name}</div>
+                <div className="text-sm font-semibold">
+                  {userInfo.firstName} {userInfo.lastName}
+                </div>
                 <div className="flex justify-between items-end mt-2 text-[9px] opacity-70">
-                  <div>REGISTERED SINCE 2023</div>
                   <div>SECURE ID</div>
+                  <div>By BudgetEase </div>
                 </div>
               </div>
             </div>
@@ -112,7 +121,7 @@ const HomePage = () => {
                   <DollarSign className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm text-gray-800 text-center">Salary</h3>
-                <div className="text-md font-semibold">{userInfo.salary}</div>
+                <div className="text-md font-semibold">20000</div>
               </div>
 
               {/* PayPal Card */}
@@ -121,7 +130,7 @@ const HomePage = () => {
                   <Wallet className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm text-gray-800 text-center">PayPal</h3>
-                <div className="text-md font-semibold">{userInfo.paypal}</div>
+                <div className="text-md font-semibold">5000</div>
               </div>
             </div>
           </div>

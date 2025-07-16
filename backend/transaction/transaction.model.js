@@ -21,6 +21,7 @@ const transactionSchema = new mongoose.Schema({
     required: true,
     min: 0,
   },
+  date: { type: Date, max: Date.now() },
   category: {
     type: String,
     enum: [

@@ -25,6 +25,17 @@ export const getBudgetPlan = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "users", // name of the Category collection in MongoDB (usually plural)
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: "$userDetails",
+      },
+      {
         $project: {
           _id: 0,
           title: 1,
@@ -33,6 +44,11 @@ export const getBudgetPlan = async (req, res) => {
           currentSavings: 1,
           period: 1,
           description: 1,
+          userInfo: {
+            firstName: "$userDetails.firstName",
+            lastName: "$userDetails.lastName",
+            userId: "$userDetails._id",
+          },
         },
       },
     ]);

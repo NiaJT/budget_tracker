@@ -13,7 +13,7 @@ export const transactionValidationSchema = yup.object({
     .typeError("Amount must be a number")
     .min(0, "Amount cannot be negative")
     .required("Amount is required"),
-
+  date: yup.date().max(dayjs()).required(),
   category: yup
     .string()
     .oneOf(

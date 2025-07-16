@@ -5,6 +5,10 @@ import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios.instance";
 import * as yup from "yup";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { IResponse } from "@/interface/response.interface";
+import { IError } from "@/interface/error.interface";
 
 interface TransactionFormValues {
   type: "income" | "expense" | "";
@@ -59,15 +63,17 @@ export const transactionValidationSchema = yup.object({
 });
 
 const TransactionAddForm: React.FC = () => {
-  const {
-    mutate: addTransaction,
-    isLoading,
-    isError,
-    error,
-    isSuccess,
-  } = useMutation({
+  const router = useRouter();
+  const { mutate: addTransaction, isLoading } = useMutation({
     mutationFn: (transactionData: any) =>
       axiosInstance.post("/transaction/add", transactionData),
+    onSuccess: (res: IResponse) => {
+      toast.success(res.data.message);
+      router.push("/");
+    },
+    onError: (error: IError) => {
+      toast.error(error.response.data.message);
+    },
   });
 
   const formik = useFormik<TransactionFormValues>({
@@ -100,18 +106,6 @@ const TransactionAddForm: React.FC = () => {
       <h2 className="text-lg font-semibold mb-6 text-center text-gray-800">
         Add Transaction
       </h2>
-
-      {isError && (
-        <div className="mb-3 p-2 bg-red-100 text-red-700 text-sm rounded">
-          {(error as any)?.response?.data?.message || (error as Error).message}
-        </div>
-      )}
-
-      {isSuccess && (
-        <div className="mb-3 p-2 bg-green-100 text-green-700 text-sm rounded">
-          Transaction added successfully!
-        </div>
-      )}
 
       <form
         onSubmit={formik.handleSubmit}
