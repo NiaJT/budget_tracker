@@ -36,7 +36,7 @@ export const getBudgetPlan = async (req, res) => {
         },
       },
     ]);
-    if (!budgetPlan) {
+    if (budgetPlan.length === 0) {
       return res
         .status(200)
         .send({ message: "Budget Plan doesn't exist. Try creating one" });
@@ -44,7 +44,10 @@ export const getBudgetPlan = async (req, res) => {
     return res
       .status(200)
       .send({ message: "Loaded Budget Plan Successfully", budgetPlan });
-  } catch (error) {}
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({ message: "Internal Server Error" });
+  }
 };
 export const budgetPlanUpdate = async (req, res) => {
   try {

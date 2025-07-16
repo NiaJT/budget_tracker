@@ -11,6 +11,9 @@ import {
   ShoppingCart,
   Shirt,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "@/lib/axios.instance";
+import toast from "react-hot-toast";
 
 const userInfo = {
   name: "Niraj Thapa",
@@ -55,12 +58,19 @@ const recentTransactions = [
 ];
 
 const HomePage = () => {
+  const { isPending, data } = useQuery({
+    queryKey: ["get-user-plan"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/budget/myplan");
+      toast.success(res?.data?.message);
+      return res;
+    },
+  });
+  console.log(data);
   return (
     <div className="flex flex-col md:flex-row w-full h-full gap-6 p-4">
-      {/* Left Section (60%) with white background */}
       <div className="w-full md:w-[60%] bg-white p-6 rounded-3xl shadow-sm flex flex-col gap-6">
         <div className="flex flex-col md:flex-row gap-6">
-          {/* User Card (sticky on md+) */}
           <div className="w-full md:w-[300px] shrink-0 md:sticky top-4 h-fit">
             <h1 className="text-base font-semibold text-gray-800 mb-3">
               Dashboard
