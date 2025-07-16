@@ -4,7 +4,7 @@ import React from "react";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios.instance";
-import { transactionValidationSchema } from "@/lib/validation/transaction.schema";
+import * as yup from "yup";
 
 interface TransactionFormValues {
   type: "income" | "expense" | "";
@@ -13,6 +13,50 @@ interface TransactionFormValues {
   category: string;
   description: string;
 }
+
+// Categories by type
+const categoriesByType = {
+  income: [
+    "Salary",
+    "Business",
+    "Investment",
+    "Gift",
+    "Freelance",
+    "Rental Income",
+    "Refunds",
+  ],
+  expense: [
+    "Rent",
+    "Utilities",
+    "Groceries",
+    "Transportation",
+    "Entertainment",
+    "Subscriptions",
+    "Insurance",
+    "Education",
+    "Healthcare",
+    "Travel",
+    "Debt",
+    "Shopping",
+    "Dining",
+  ],
+};
+
+// Validation schema
+export const transactionValidationSchema = yup.object({
+  type: yup
+    .string()
+    .oneOf(["income", "expense"], "Type must be either 'income' or 'expense'")
+    .required("Transaction type is required"),
+  title: yup.string().trim().required("Title is required"),
+  amount: yup
+    .number()
+    .typeError("Amount must be a number")
+    .min(0, "Amount cannot be negative")
+    .required("Amount is required"),
+  category: yup.string().required("Category is required"),
+  description: yup.string(),
+});
 
 const TransactionAddForm: React.FC = () => {
   const {
@@ -36,6 +80,7 @@ const TransactionAddForm: React.FC = () => {
     },
     validationSchema: transactionValidationSchema,
     onSubmit: (values) => {
+      // Convert amount to number for API
       const transactionData = {
         ...values,
         amount: +values.amount,
@@ -44,8 +89,14 @@ const TransactionAddForm: React.FC = () => {
     },
   });
 
+  // Current categories depending on selected type
+  const currentCategories =
+    formik.values.type && categoriesByType[formik.values.type]
+      ? categoriesByType[formik.values.type]
+      : [];
+
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-md">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-md">
       <h2 className="text-lg font-semibold mb-6 text-center text-gray-800">
         Add Transaction
       </h2>
@@ -64,7 +115,7 @@ const TransactionAddForm: React.FC = () => {
 
       <form
         onSubmit={formik.handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"
       >
         {/* Type */}
         <div className="flex flex-col">
@@ -74,12 +125,18 @@ const TransactionAddForm: React.FC = () => {
           <select
             id="type"
             name="type"
-            onChange={formik.handleChange}
+            onChange={(e) => {
+              formik.handleChange(e);
+              // Clear category when type changes
+              formik.setFieldValue("category", "");
+            }}
             onBlur={formik.handleBlur}
-            value={formik.values.type}
-            className="w-full border border-gray-300 rounded p-2 text-sm"
+            value={formik.values.type || ""}
+            className="w-full border border-gray-300 rounded p-2"
           >
-            <option value="">Select type</option>
+            <option value="" disabled>
+              Select type
+            </option>
             <option value="income">Income</option>
             <option value="expense">Expense</option>
           </select>
@@ -90,7 +147,10 @@ const TransactionAddForm: React.FC = () => {
           )}
         </div>
 
+        {/* Title */}
         <FormField label="Title*" name="title" type="text" formik={formik} />
+
+        {/* Amount */}
         <FormField
           label="Amount*"
           name="amount"
@@ -108,38 +168,20 @@ const TransactionAddForm: React.FC = () => {
             name="category"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            value={formik.values.category}
-            className="w-full border border-gray-300 rounded p-2 text-sm"
+            value={formik.values.category || ""}
+            disabled={!formik.values.type} // disable until type selected
+            className="w-full border border-gray-300 rounded p-2 disabled:bg-gray-100"
           >
-            <option value="">Select category</option>
-
-            {/* Income categories */}
-            <optgroup label="Income">
-              <option value="Salary">Salary</option>
-              <option value="Business">Business</option>
-              <option value="Investment">Investment</option>
-              <option value="Gift">Gift</option>
-              <option value="Freelance">Freelance</option>
-              <option value="Rental Income">Rental Income</option>
-              <option value="Refunds">Refunds</option>
-            </optgroup>
-
-            {/* Expense categories */}
-            <optgroup label="Expense">
-              <option value="Rent">Rent</option>
-              <option value="Utilities">Utilities</option>
-              <option value="Groceries">Groceries</option>
-              <option value="Transportation">Transportation</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Subscriptions">Subscriptions</option>
-              <option value="Insurance">Insurance</option>
-              <option value="Education">Education</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Travel">Travel</option>
-              <option value="Debt">Debt</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Dining">Dining</option>
-            </optgroup>
+            <option value="" disabled>
+              {formik.values.type
+                ? "Select category"
+                : "Select transaction type first"}
+            </option>
+            {currentCategories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
           {formik.touched.category && formik.errors.category && (
             <div className="text-red-500 text-xs mt-1">
@@ -148,7 +190,7 @@ const TransactionAddForm: React.FC = () => {
           )}
         </div>
 
-        {/* Description */}
+        {/* Description (full width) */}
         <div className="md:col-span-2">
           <label htmlFor="description" className="text-gray-700 mb-1 block">
             Description
@@ -159,9 +201,14 @@ const TransactionAddForm: React.FC = () => {
             rows={2}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            value={formik.values.description}
+            value={formik.values.description || ""}
             className="w-full border border-gray-300 rounded p-2 text-sm"
           />
+          {formik.touched.description && formik.errors.description && (
+            <div className="text-red-500 text-xs mt-1">
+              {formik.errors.description}
+            </div>
+          )}
         </div>
 
         {/* Submit */}
@@ -187,7 +234,7 @@ type FormFieldProps = {
 };
 
 const FormField: React.FC<FormFieldProps> = ({ label, name, type, formik }) => (
-  <div>
+  <div className="flex flex-col">
     <label htmlFor={name} className="text-gray-700 mb-1 block">
       {label}
     </label>
@@ -197,7 +244,7 @@ const FormField: React.FC<FormFieldProps> = ({ label, name, type, formik }) => (
       type={type}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
-      value={formik.values[name]}
+      value={formik.values[name] || ""}
       className="w-full border border-gray-300 rounded p-2 text-sm"
     />
     {formik.touched[name] && formik.errors[name] && (

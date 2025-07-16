@@ -20,20 +20,25 @@ export const registerController = async (req, res) => {
 export const loginController = async (req, res) => {
   let loginCredentials = req.body;
   const user = await UserTable.findOne({ email: loginCredentials.email });
+
   if (!user) {
-    res.status(400).send({ message: "Invalid Credentials" });
+    return res.status(400).send({ message: "Invalid Credentials" });
   }
+
   const match = await bcrypt.compare(loginCredentials.password, user.password);
   if (!match) {
-    res.status(400).send({ message: "Invalid Credentials" });
+    return res.status(400).send({ message: "Invalid Credentials" });
   }
+
   const payload = { email: user.email };
   const secretKey = process.env.SECRETKEY;
   const token = jwt.sign(payload, secretKey, {
     expiresIn: "7d",
   });
+
   user.password = undefined;
-  res
+
+  return res
     .status(200)
     .send({ message: "Login Successful", accessToken: token, details: user });
 };
