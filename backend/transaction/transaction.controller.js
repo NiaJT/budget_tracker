@@ -16,7 +16,7 @@ router.post(
   addTransactionHandler
 );
 
-router.get("/list", isUser, listTransactionHandler);
+router.post("/list", isUser, listTransactionHandler);
 
 export default router;
 
