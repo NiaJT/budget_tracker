@@ -16,6 +16,7 @@ interface TransactionFormValues {
   amount: string;
   category: string;
   description: string;
+  date: Date;
 }
 
 // Categories by type
@@ -83,15 +84,12 @@ const TransactionAddForm: React.FC = () => {
       amount: "",
       category: "",
       description: "",
+      date: new Date(),
     },
     validationSchema: transactionValidationSchema,
     onSubmit: (values) => {
-      // Convert amount to number for API
-      const transactionData = {
-        ...values,
-        amount: +values.amount,
-      };
-      addTransaction(transactionData);
+      console.log(values);
+      addTransaction(values);
     },
   });
 
@@ -183,7 +181,26 @@ const TransactionAddForm: React.FC = () => {
             </div>
           )}
         </div>
-
+        {/* Date */}
+        <div className="flex flex-col">
+          <label htmlFor="date" className="text-gray-700 mb-1">
+            Date*
+          </label>
+          <input
+            id="date"
+            name="date"
+            type="date"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.date}
+            className="w-full border border-gray-300 rounded p-2"
+          />
+          {formik.touched.date && formik.errors.date && (
+            <div className="text-red-500 text-xs mt-1">
+              {formik.errors.date}
+            </div>
+          )}
+        </div>
         {/* Description (full width) */}
         <div className="md:col-span-2">
           <label htmlFor="description" className="text-gray-700 mb-1 block">

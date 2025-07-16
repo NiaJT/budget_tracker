@@ -68,22 +68,15 @@ export const getBudgetPlan = async (req, res) => {
 export const budgetPlanUpdate = async (req, res) => {
   try {
     const updates = req.body;
-
-    // Attach userId from auth middleware
     const userId = req.loggedInUser;
-
-    // Find the plan first
     const plan = await BudgetTrackerTable.findOne({ userId });
     if (!plan) {
       return res.status(404).send({ message: "Budget Plan doesn't exist" });
     }
-
-    // Update by plan._id
     await BudgetTrackerTable.findByIdAndUpdate(plan._id, updates, {
       new: true,
       runValidators: true,
     });
-
     res.status(200).send({ message: "Successfully updated budget plan" });
   } catch (error) {
     console.error(error.message);

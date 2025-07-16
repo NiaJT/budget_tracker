@@ -17,6 +17,7 @@ export const addTransactionHandler = async (req, res) => {
   }
 };
 export const listTransactionHandler = async (req, res) => {
+  const limit = req.body.limit ? req.body.limit : 10;
   try {
     const transactions = await TransactionTable.aggregate([
       {
@@ -24,6 +25,7 @@ export const listTransactionHandler = async (req, res) => {
           userId: req.loggedInUser,
         },
       },
+      { $limit: limit },
       {
         $lookup: {
           from: "categories", // name of the Category collection in MongoDB (usually plural)

@@ -4,7 +4,11 @@ import React from "react";
 import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import { axiosInstance } from "@/lib/axios.instance";
-import * as Yup from "yup";
+import { budgetSchema } from "@/lib/validation/budget.schema";
+import { IResponse } from "@/interface/response.interface";
+import { IError } from "@/interface/error.interface";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 interface BudgetFormValues {
   title: string;
@@ -12,30 +16,23 @@ interface BudgetFormValues {
   savingPlan: string;
   currentSavings: string;
   period: "weekly" | "monthly" | "quarterly" | "yearly";
-  startDate: string;
+  startDate: Date;
   description: string;
 }
 
-const budgetSchema = Yup.object({
-  title: Yup.string().required("Title is required"),
-  currentBalance: Yup.number().typeError("Must be a number").required(),
-  savingPlan: Yup.number().typeError("Must be a number").required(),
-  currentSavings: Yup.number().typeError("Must be a number").required(),
-  period: Yup.string().required(),
-  startDate: Yup.string().required(),
-  description: Yup.string(),
-});
-
 const BudgetAddForm: React.FC = () => {
-  const {
-    mutate: addBudget,
-    isLoading,
-    isError,
-    error,
-    isSuccess,
-  } = useMutation({
+  const router = useRouter();
+
+  const { mutate: addBudget, isLoading } = useMutation({
     mutationFn: (budgetData: any) =>
       axiosInstance.post("/budget/add", budgetData),
+    onSuccess: (res: IResponse) => {
+      toast.success(res.data.message);
+      router.push("/");
+    },
+    onError: (error: IError) => {
+      toast.error(error.response.data.message);
+    },
   });
 
   const formik = useFormik<BudgetFormValues>({
@@ -45,18 +42,13 @@ const BudgetAddForm: React.FC = () => {
       savingPlan: "",
       currentSavings: "",
       period: "monthly",
-      startDate: new Date().toISOString().split("T")[0],
+      startDate: new Date(),
       description: "",
     },
     validationSchema: budgetSchema,
     onSubmit: (values) => {
-      const budgetData = {
-        ...values,
-        currentBalance: +values.currentBalance,
-        savingPlan: +values.savingPlan,
-        currentSavings: +values.currentSavings,
-      };
-      addBudget(budgetData);
+      console.log("Submitting budget data:", values);
+      addBudget(values);
     },
   });
 
@@ -65,18 +57,6 @@ const BudgetAddForm: React.FC = () => {
       <h2 className="text-lg font-semibold mb-6 text-center text-gray-800">
         Add Budget
       </h2>
-
-      {isError && (
-        <div className="mb-3 p-2 bg-red-100 text-red-700 text-sm rounded">
-          {(error as any)?.response?.data?.message || (error as Error).message}
-        </div>
-      )}
-
-      {isSuccess && (
-        <div className="mb-3 p-2 bg-green-100 text-green-700 text-sm rounded">
-          Budget added successfully!
-        </div>
-      )}
 
       <form
         onSubmit={formik.handleSubmit}
@@ -128,12 +108,29 @@ const BudgetAddForm: React.FC = () => {
         </div>
 
         {/* Start Date */}
-        <FormField
-          label="Start Date"
-          name="startDate"
-          type="date"
-          formik={formik}
-        />
+        <div className="flex flex-col">
+          <label htmlFor="startDate" className="text-gray-700 mb-1">
+            Start Date*
+          </label>
+          <input
+            id="startDate"
+            name="startDate"
+            type="date"
+            onChange={(e) =>
+              formik.setFieldValue("startDate", new Date(e.target.value))
+            }
+            onBlur={formik.handleBlur}
+            value={formik.values.startDate.toISOString().split("T")[0]} // string format for input
+            className="w-full border border-gray-300 rounded p-2 text-sm"
+          />
+          {formik.touched.startDate && formik.errors.startDate && (
+            <div className="text-red-500 text-xs mt-1">
+              {typeof formik.errors.startDate === "string"
+                ? formik.errors.startDate
+                : ""}
+            </div>
+          )}
+        </div>
 
         {/* Description */}
         <div className="md:col-span-2">
@@ -189,7 +186,7 @@ const FormField: React.FC<FormFieldProps> = ({ label, name, type, formik }) => (
       type={type}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
-      value={formik.values[name]}
+      value={formik.values[name] as string}
       className="w-full border border-gray-300 rounded p-2 text-sm"
     />
     {formik.touched[name] && formik.errors[name] && (
